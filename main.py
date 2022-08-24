@@ -39,7 +39,7 @@ def generate_password():
 
 
 def save():
-    website = website_entry.get()
+    website = website_entry.get().title()
     email = email_entry.get()
     password = password_entry.get()
     new_data = {
@@ -70,6 +70,22 @@ def save():
             website_entry.focus()
             messagebox.showinfo(title="Success", message="Your password was saved")
 
+
+# ---------------------------- FIND PASSWORD ------------------------------- #
+def find_password():
+    website = website_entry.get().title()
+    try:
+        with open("data.json") as data_file:
+            data = json.load(data_file)
+    except FileNotFoundError:
+        messagebox.showinfo(title="Error", message="No data file found")
+    else:
+        if website in data:
+            email = data[website]["email"]
+            password = data[website]["password"]
+            messagebox.showinfo(title={website}, message=f"Email: {email}\nPassword: {password}")
+        else:
+            messagebox.showinfo(title="Error", message=f"No details for {website} exists")
 
 # ---------------------------- UI SETUP ------------------------------- #
 
@@ -106,8 +122,8 @@ website_label.grid(column=0, row=3)
 # ---------------------------- ENTRIES ------------------------------- #
 
 # TODO Website Entry
-website_entry = Entry(width=52)
-website_entry.grid(column=1, row=1, columnspan=2, pady=Y_PADDING)
+website_entry = Entry(width=33)
+website_entry.grid(column=1, row=1, pady=Y_PADDING)
 website_entry.focus()
 
 # TODO Email/Username Entry
@@ -130,5 +146,10 @@ generate_password.grid(row=3, column=2)
 generate_password = Button(height=BUTTON_HEIGHT, width=45, pady=Y_PADDING, command=save)
 generate_password.config(text="Add")
 generate_password.grid(row=4, column=1, columnspan=2)
+
+# TODO Search Button
+search = Button(pady=Y_PADDING, height=BUTTON_HEIGHT, width=15, command=find_password)
+search.config(text="Search")
+search.grid(row=1, column=2)
 
 window.mainloop()
